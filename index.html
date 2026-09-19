@@ -30,6 +30,18 @@
       font-size: 0.85rem;
     }
 
+    #pista {
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: #a99bc2;
+      margin-top: 10px;
+      visibility: hidden;
+    }
+
+    #pista.visible {
+      visibility: visible;
+    }
+
     #pentagrama {
       position: relative;
       width: min(90vw, 420px);
@@ -54,6 +66,14 @@
       padding: 4px;
       box-sizing: border-box;
       transform: translate(-50%, -50%);
+    }
+
+    .carta.con-carta {
+      cursor: pointer;
+    }
+
+    .carta.con-carta:active {
+      border-color: #4de8ff;
     }
 
     .contenido-carta {
@@ -89,6 +109,118 @@
     .punto-4 { top: 80.7%; left: 27.7%; }
     .punto-5 { top: 38.3%; left: 13.9%; }
     .centro  { top: 50%;   left: 50%; }
+
+    #modal-fondo {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 5, 18, 0.85);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 10;
+    }
+
+    #modal-fondo.visible {
+      display: flex;
+    }
+
+    #modal-panel {
+      background: #241a33;
+      border: 2px solid #c9a86a;
+      border-radius: 12px;
+      max-width: 420px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px 20px;
+      position: relative;
+      text-align: left;
+    }
+
+    #modal-cerrar {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #f2ede6;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    #modal-icono {
+      width: 60px;
+      height: 60px;
+      color: #4de8ff;
+      filter: drop-shadow(0 0 4px #4de8ff);
+      display: block;
+      margin: 0 auto 8px;
+    }
+
+    #modal-nombre {
+      font-family: 'Courier New', monospace;
+      text-align: center;
+      letter-spacing: 1px;
+      margin: 0 0 4px;
+    }
+
+    #modal-orientacion {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: #4de8ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .significado-seccion {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #4de8ff33;
+    }
+
+    .significado-seccion.activa {
+      border-color: #4de8ff;
+      box-shadow: 0 0 10px #4de8ff44;
+      background: #1b1224;
+    }
+
+    .significado-seccion h3 {
+      margin: 0 0 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #c9a86a;
+    }
+
+    .significado-seccion p {
+      margin: 0 0 10px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .palabras-clave {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .palabra {
+      background: #1b1224;
+      border: 1px solid #4de8ff;
+      color: #4de8ff;
+      font-family: 'Courier New', monospace;
+      font-size: 0.6rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
   </style>
 </head>
 <body>
@@ -220,6 +352,7 @@
 
   <h1>Mazo de Arcanos Mayores</h1>
   <button id="tirar">Tirar 6 cartas</button>
+  <p id="pista">Tocá una carta para ver su significado</p>
   <div id="pentagrama">
     <div class="carta punto-1"></div>
     <div class="carta punto-2"></div>
@@ -229,31 +362,186 @@
     <div class="carta centro"></div>
   </div>
 
+  <div id="modal-fondo">
+    <div id="modal-panel">
+      <button id="modal-cerrar" aria-label="Cerrar">×</button>
+      <svg id="modal-icono" viewBox="0 0 24 24"><use id="modal-icono-use" href=""></use></svg>
+      <h2 id="modal-nombre"></h2>
+      <p id="modal-orientacion"></p>
+
+      <div id="seccion-derecho" class="significado-seccion">
+        <h3>Derecho</h3>
+        <p id="modal-significado-derecho"></p>
+        <div id="modal-palabras-derecho" class="palabras-clave"></div>
+      </div>
+
+      <div id="seccion-invertido" class="significado-seccion">
+        <h3>Invertido</h3>
+        <p id="modal-significado-invertido"></p>
+        <div id="modal-palabras-invertido" class="palabras-clave"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const arcanosMayores = [
-      { nombre: "El Loco", icono: "loco" },
-      { nombre: "El Mago", icono: "mago" },
-      { nombre: "La Sacerdotisa", icono: "sacerdotisa" },
-      { nombre: "La Emperatriz", icono: "emperatriz" },
-      { nombre: "El Emperador", icono: "emperador" },
-      { nombre: "El Hierofante", icono: "hierofante" },
-      { nombre: "Los Enamorados", icono: "enamorados" },
-      { nombre: "El Carro", icono: "carro" },
-      { nombre: "La Justicia", icono: "justicia" },
-      { nombre: "El Ermitaño", icono: "ermitano" },
-      { nombre: "La Rueda de la Fortuna", icono: "rueda" },
-      { nombre: "La Fuerza", icono: "fuerza" },
-      { nombre: "El Colgado", icono: "colgado" },
-      { nombre: "La Muerte", icono: "muerte" },
-      { nombre: "La Templanza", icono: "templanza" },
-      { nombre: "El Diablo", icono: "diablo" },
-      { nombre: "La Torre", icono: "torre" },
-      { nombre: "La Estrella", icono: "estrella" },
-      { nombre: "La Luna", icono: "luna" },
-      { nombre: "El Sol", icono: "sol" },
-      { nombre: "El Juicio", icono: "juicio" },
-      { nombre: "El Mundo", icono: "mundo" }
+      {
+        nombre: "El Loco", icono: "loco",
+        significadoDerecho: "Nuevos comienzos, dar un salto de fe y abrirte a lo desconocido con espontaneidad.",
+        palabrasDerecho: ["comienzos", "libertad", "espontaneidad", "potencial"],
+        significadoInvertido: "Imprudencia, actuar sin pensar o miedo a arriesgarte por lo que pueda pasar.",
+        palabrasInvertido: ["imprudencia", "duda", "riesgo mal calculado", "dispersión"]
+      },
+      {
+        nombre: "El Mago", icono: "mago",
+        significadoDerecho: "Tenés las herramientas y la voluntad para manifestar lo que te proponés.",
+        palabrasDerecho: ["voluntad", "manifestación", "habilidad", "acción"],
+        significadoInvertido: "Potencial desaprovechado, manipulación o falta de enfoque en lo que querés lograr.",
+        palabrasInvertido: ["manipulación", "engaño", "inseguridad", "talento desperdiciado"]
+      },
+      {
+        nombre: "La Sacerdotisa", icono: "sacerdotisa",
+        significadoDerecho: "Intuición, sabiduría interior y misterios que todavía no se revelan del todo.",
+        palabrasDerecho: ["intuición", "misterio", "subconsciente", "calma"],
+        significadoInvertido: "Secretos que salen a la luz o una desconexión de tu propia intuición.",
+        palabrasInvertido: ["confusión", "secretos revelados", "desconexión", "superficialidad"]
+      },
+      {
+        nombre: "La Emperatriz", icono: "emperatriz",
+        significadoDerecho: "Abundancia, creatividad y una conexión fuerte con el cuidado y la naturaleza.",
+        palabrasDerecho: ["abundancia", "fertilidad", "creatividad", "nutrición"],
+        significadoInvertido: "Bloqueo creativo, dependencia excesiva de otros o descuido de vos mismo.",
+        palabrasInvertido: ["estancamiento", "sobreprotección", "descuido", "vacío creativo"]
+      },
+      {
+        nombre: "El Emperador", icono: "emperador",
+        significadoDerecho: "Estructura, liderazgo, autoridad y estabilidad para sostener lo que construís.",
+        palabrasDerecho: ["autoridad", "estructura", "control", "disciplina"],
+        significadoInvertido: "Rigidez excesiva, abuso de poder o falta de disciplina cuando más se necesita.",
+        palabrasInvertido: ["tiranía", "rigidez", "descontrol", "inestabilidad"]
+      },
+      {
+        nombre: "El Hierofante", icono: "hierofante",
+        significadoDerecho: "Tradición, aprendizaje y guía a través de una enseñanza o institución establecida.",
+        palabrasDerecho: ["tradición", "guía", "enseñanza", "valores"],
+        significadoInvertido: "Cuestionar lo establecido, romper reglas o buscar tu propio camino fuera del molde.",
+        palabrasInvertido: ["rebeldía", "no conformismo", "dogma", "restricción"]
+      },
+      {
+        nombre: "Los Enamorados", icono: "enamorados",
+        significadoDerecho: "Conexión profunda, decisiones que vienen del corazón y valores compartidos.",
+        palabrasDerecho: ["unión", "amor", "elección", "armonía"],
+        significadoInvertido: "Desequilibrio en un vínculo o decisiones en conflicto entre lo que sentís y lo que pensás.",
+        palabrasInvertido: ["desconexión", "desequilibrio", "indecisión", "valores enfrentados"]
+      },
+      {
+        nombre: "El Carro", icono: "carro",
+        significadoDerecho: "Determinación y avance con fuerza de voluntad, una victoria lograda por esfuerzo propio.",
+        palabrasDerecho: ["determinación", "voluntad", "avance", "victoria"],
+        significadoInvertido: "Pérdida de rumbo, falta de control o obstáculos que vos mismo te ponés.",
+        palabrasInvertido: ["desvío", "falta de dirección", "agresividad", "estancamiento"]
+      },
+      {
+        nombre: "La Justicia", icono: "justicia",
+        significadoDerecho: "Equidad, verdad y decisiones claras, entendiendo que cada acción tiene su consecuencia.",
+        palabrasDerecho: ["equilibrio", "verdad", "justicia", "responsabilidad"],
+        significadoInvertido: "Injusticia, deshonestidad o evasión de las consecuencias de tus propios actos.",
+        palabrasInvertido: ["injusticia", "parcialidad", "desequilibrio", "negación"]
+      },
+      {
+        nombre: "El Ermitaño", icono: "ermitano",
+        significadoDerecho: "Introspección y búsqueda interior, encontrar sabiduría a través de la soledad elegida.",
+        palabrasDerecho: ["introspección", "soledad elegida", "guía interior", "reflexión"],
+        significadoInvertido: "Aislamiento excesivo o evitar mirar hacia adentro cuando más falta hace.",
+        palabrasInvertido: ["aislamiento", "retraimiento", "evasión", "desconexión"]
+      },
+      {
+        nombre: "La Rueda de la Fortuna", icono: "rueda",
+        significadoDerecho: "Cambios de ciclo, el destino en movimiento y oportunidades que aparecen sin avisar.",
+        palabrasDerecho: ["cambio", "ciclos", "destino", "oportunidad"],
+        significadoInvertido: "Resistencia al cambio, una mala racha o la sensación de estar atrapado.",
+        palabrasInvertido: ["resistencia", "contratiempos", "estancamiento", "mala suerte"]
+      },
+      {
+        nombre: "La Fuerza", icono: "fuerza",
+        significadoDerecho: "Coraje sereno: dominar tus impulsos con paciencia y compasión, no con fuerza bruta.",
+        palabrasDerecho: ["coraje", "paciencia", "compasión", "fortaleza interior"],
+        significadoInvertido: "Inseguridad, dudar de tu propia fuerza o actuar de forma impulsiva.",
+        palabrasInvertido: ["autoduda", "debilidad interior", "impulsividad", "descontrol"]
+      },
+      {
+        nombre: "El Colgado", icono: "colgado",
+        significadoDerecho: "Una pausa voluntaria para ver las cosas desde otra perspectiva antes de actuar.",
+        palabrasDerecho: ["pausa", "perspectiva", "rendición consciente", "espera"],
+        significadoInvertido: "Estancamiento por resistirte al cambio, o un sacrificio que ya no tiene sentido.",
+        palabrasInvertido: ["resistencia al cambio", "indecisión", "martirio", "demora"]
+      },
+      {
+        nombre: "La Muerte", icono: "muerte",
+        significadoDerecho: "El final necesario de una etapa, una transformación profunda que abre paso a algo nuevo.",
+        palabrasDerecho: ["transformación", "cierre de ciclo", "renovación", "transición"],
+        significadoInvertido: "Resistirte a un cambio inevitable, estancamiento o miedo a soltar lo que ya terminó.",
+        palabrasInvertido: ["negación", "apego", "estancamiento", "miedo al cambio"]
+      },
+      {
+        nombre: "La Templanza", icono: "templanza",
+        significadoDerecho: "Equilibrio y paciencia, integrar opuestos con calma para encontrar armonía.",
+        palabrasDerecho: ["equilibrio", "paciencia", "moderación", "sanación"],
+        significadoInvertido: "Desequilibrio, excesos o falta de paciencia para sostener lo que estás construyendo.",
+        palabrasInvertido: ["exceso", "desarmonía", "impaciencia", "desajuste"]
+      },
+      {
+        nombre: "El Diablo", icono: "diablo",
+        significadoDerecho: "Ataduras materiales o emocionales, tentaciones y patrones que te mantienen atrapado.",
+        palabrasDerecho: ["apego", "tentación", "patrones", "materialismo"],
+        significadoInvertido: "Liberarte de una atadura, romper un patrón y recuperar el control de tu vida.",
+        palabrasInvertido: ["liberación", "ruptura de patrones", "empoderamiento", "desapego"]
+      },
+      {
+        nombre: "La Torre", icono: "torre",
+        significadoDerecho: "Una ruptura repentina, una revelación que sacude estructuras que ya eran falsas.",
+        palabrasDerecho: ["ruptura", "caos súbito", "revelación", "cambio forzado"],
+        significadoInvertido: "Se evita una crisis por poco, o el caos queda contenido por dentro en vez de estallar.",
+        palabrasInvertido: ["crisis evitada", "cambio postergado", "miedo al colapso", "tensión interna"]
+      },
+      {
+        nombre: "La Estrella", icono: "estrella",
+        significadoDerecho: "Esperanza renovada, fe en el futuro y sanación después de un momento difícil.",
+        palabrasDerecho: ["esperanza", "fe", "inspiración", "sanación"],
+        significadoInvertido: "Desesperanza, desconexión de tu propósito o falta de fe en que las cosas mejoren.",
+        palabrasInvertido: ["desánimo", "desconexión", "duda", "agotamiento"]
+      },
+      {
+        nombre: "La Luna", icono: "luna",
+        significadoDerecho: "Lo oculto, la intuición y el mundo del inconsciente saliendo a la superficie.",
+        palabrasDerecho: ["intuición", "ilusión", "subconsciente", "incertidumbre"],
+        significadoInvertido: "Claridad después de la confusión, miedos que empiezan por fin a disiparse.",
+        palabrasInvertido: ["claridad emergente", "liberación de miedos", "verdad revelada", "alivio"]
+      },
+      {
+        nombre: "El Sol", icono: "sol",
+        significadoDerecho: "Alegría, éxito y vitalidad: un momento de claridad total y confianza en vos mismo.",
+        palabrasDerecho: ["alegría", "éxito", "vitalidad", "confianza"],
+        significadoInvertido: "Alegría postergada, un optimismo exagerado o un éxito que todavía es parcial.",
+        palabrasInvertido: ["optimismo excesivo", "demora", "ego", "éxito incompleto"]
+      },
+      {
+        nombre: "El Juicio", icono: "juicio",
+        significadoDerecho: "Un llamado interior, un despertar y la oportunidad de evaluar tu camino con honestidad.",
+        palabrasDerecho: ["despertar", "renovación", "llamado interior", "evaluación"],
+        significadoInvertido: "Autocrítica excesiva, ignorar un llamado importante o dudar demasiado de vos mismo.",
+        palabrasInvertido: ["autojuicio", "duda", "negación", "llamado ignorado"]
+      },
+      {
+        nombre: "El Mundo", icono: "mundo",
+        significadoDerecho: "Culminación y logro completo: la sensación de plenitud al cerrar un ciclo entero.",
+        palabrasDerecho: ["cumplimiento", "integración", "logro", "plenitud"],
+        significadoInvertido: "Un ciclo que queda incompleto, falta de cierre o una meta que se sigue postergando.",
+        palabrasInvertido: ["incompletitud", "demora", "falta de cierre", "estancamiento"]
+      }
     ];
+
+    let cartasEnMesa = [];
 
     function mezclar(array) {
       const copia = [...array];
@@ -264,14 +552,18 @@
       return copia;
     }
 
+    const cajas = document.querySelectorAll('.carta');
+    const pista = document.getElementById('pista');
+
     document.getElementById('tirar').addEventListener('click', () => {
-      const elegidas = mezclar(arcanosMayores).slice(0, 6).map(carta => ({
+      cartasEnMesa = mezclar(arcanosMayores).slice(0, 6).map(carta => ({
         ...carta,
         invertida: Math.random() < 0.5
       }));
-      const cajas = document.querySelectorAll('.carta');
+
       cajas.forEach((caja, index) => {
-        const carta = elegidas[index];
+        const carta = cartasEnMesa[index];
+        caja.classList.add('con-carta');
         caja.innerHTML = `
           <div class="contenido-carta ${carta.invertida ? 'invertida' : ''}">
             <svg class="icono-carta" viewBox="0 0 24 24"><use href="#icon-${carta.icono}"></use></svg>
@@ -279,6 +571,46 @@
           </div>
         `;
       });
+
+      pista.classList.add('visible');
+    });
+
+    const modalFondo = document.getElementById('modal-fondo');
+
+    function abrirModal(carta) {
+      document.getElementById('modal-icono-use').setAttribute('href', `#icon-${carta.icono}`);
+      document.getElementById('modal-nombre').textContent = carta.nombre;
+      document.getElementById('modal-orientacion').textContent = carta.invertida ? 'Salió invertida' : 'Salió derecha';
+
+      document.getElementById('modal-significado-derecho').textContent = carta.significadoDerecho;
+      document.getElementById('modal-palabras-derecho').innerHTML =
+        carta.palabrasDerecho.map(p => `<span class="palabra">${p}</span>`).join('');
+
+      document.getElementById('modal-significado-invertido').textContent = carta.significadoInvertido;
+      document.getElementById('modal-palabras-invertido').innerHTML =
+        carta.palabrasInvertido.map(p => `<span class="palabra">${p}</span>`).join('');
+
+      document.getElementById('seccion-derecho').classList.toggle('activa', !carta.invertida);
+      document.getElementById('seccion-invertido').classList.toggle('activa', carta.invertida);
+
+      modalFondo.classList.add('visible');
+    }
+
+    document.getElementById('pentagrama').addEventListener('click', (evento) => {
+      const caja = evento.target.closest('.carta');
+      if (!caja || !caja.classList.contains('con-carta')) return;
+      const indice = Array.from(cajas).indexOf(caja);
+      abrirModal(cartasEnMesa[indice]);
+    });
+
+    document.getElementById('modal-cerrar').addEventListener('click', () => {
+      modalFondo.classList.remove('visible');
+    });
+
+    modalFondo.addEventListener('click', (evento) => {
+      if (evento.target === modalFondo) {
+        modalFondo.classList.remove('visible');
+      }
     });
   </script>
 </body>
