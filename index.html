@@ -64,6 +64,23 @@
       "La Rueda de la Fortuna", "La Fuerza", "El Colgado", "La Muerte", "La Templanza",
       "El Diablo", "La Torre", "La Estrella", "La Luna", "El Sol", "El Juicio", "El Mundo"
     ];
+
+    function mezclar(array) {
+      const copia = [...array];
+      for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+      }
+      return copia;
+    }
+
+    document.getElementById('tirar').addEventListener('click', () => {
+      const elegidas = mezclar(arcanosMayores).slice(0, 6);
+      const cajas = document.querySelectorAll('.carta');
+      cajas.forEach((caja, index) => {
+        caja.textContent = elegidas[index];
+      });
+    });
   </script>
 </body>
 </html>
