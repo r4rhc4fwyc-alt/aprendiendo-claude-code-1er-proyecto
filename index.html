@@ -45,7 +45,6 @@
       border: 2px solid #c9a86a;
       border-radius: 8px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
@@ -55,6 +54,16 @@
       padding: 4px;
       box-sizing: border-box;
       transform: translate(-50%, -50%);
+    }
+
+    .contenido-carta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .contenido-carta.invertida {
+      transform: rotate(180deg);
     }
 
     .icono-carta {
@@ -256,13 +265,18 @@
     }
 
     document.getElementById('tirar').addEventListener('click', () => {
-      const elegidas = mezclar(arcanosMayores).slice(0, 6);
+      const elegidas = mezclar(arcanosMayores).slice(0, 6).map(carta => ({
+        ...carta,
+        invertida: Math.random() < 0.5
+      }));
       const cajas = document.querySelectorAll('.carta');
       cajas.forEach((caja, index) => {
         const carta = elegidas[index];
         caja.innerHTML = `
-          <svg class="icono-carta" viewBox="0 0 24 24"><use href="#icon-${carta.icono}"></use></svg>
-          <span>${carta.nombre}</span>
+          <div class="contenido-carta ${carta.invertida ? 'invertida' : ''}">
+            <svg class="icono-carta" viewBox="0 0 24 24"><use href="#icon-${carta.icono}"></use></svg>
+            <span>${carta.nombre}</span>
+          </div>
         `;
       });
     });
