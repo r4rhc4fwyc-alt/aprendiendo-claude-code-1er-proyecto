@@ -4,11 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tarot Virtual - Pentagrama</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #1b1224;
+      color: #f2ede6;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #pentagrama {
+      position: relative;
+      width: min(90vw, 420px);
+      aspect-ratio: 1;
+      margin: 40px auto;
+    }
+
+    .carta {
+      position: absolute;
+      width: 17%;
+      aspect-ratio: 0.6;
+      background: #2b1f3d;
+      border: 2px solid #c9a86a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.75rem;
+      padding: 4px;
+      box-sizing: border-box;
+      transform: translate(-50%, -50%);
+    }
+
+    .punto-1 { top: 12%;   left: 50%; }
+    .punto-2 { top: 38.3%; left: 86.1%; }
+    .punto-3 { top: 80.7%; left: 72.3%; }
+    .punto-4 { top: 80.7%; left: 27.7%; }
+    .punto-5 { top: 38.3%; left: 13.9%; }
+    .centro  { top: 50%;   left: 50%; }
+  </style>
 </head>
 <body>
   <h1>Mazo de Arcanos Mayores</h1>
   <button id="tirar">Tirar 6 cartas</button>
-  <div id="pentagrama"></div>
+  <div id="pentagrama">
+    <div class="carta punto-1">Carta 1</div>
+    <div class="carta punto-2">Carta 2</div>
+    <div class="carta punto-3">Carta 3</div>
+    <div class="carta punto-4">Carta 4</div>
+    <div class="carta punto-5">Carta 5</div>
+    <div class="carta centro">Carta 6</div>
+  </div>
 
   <script>
     const arcanosMayores = [
