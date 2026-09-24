@@ -64,6 +64,8 @@ palabras clave para cada orientación.
   Fisher-Yates, íconos SVG cyber-mystic, cartas invertidas.
 - PR #2 (mergeado): significados (derecho/invertido) + palabras clave para
   los 22 arcanos, y modal al tocar una carta tirada.
+- PR #3 (mergeado): animación de flip 3D (dorso/frente) al voltear cada
+  carta al tirar, con desfase entre cartas.
 - App funcionando en vivo y probada por Roberto desde Safari (iPad y
   teléfono).
 
