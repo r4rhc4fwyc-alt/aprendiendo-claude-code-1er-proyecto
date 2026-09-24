@@ -45,6 +45,7 @@ palabras clave para cada orientación.
   en vez de mutar los objetos del array `arcanosMayores` directamente, para
   no arrastrar el estado de `invertida` de una tirada a la siguiente (los
   mismos objetos se reutilizan en cada shuffle).
+- **Animación de flip 3D al voltear cada carta** (`perspective` + `backface-visibility` en CSS, sin librerías): cada carta tiene un dorso (patrón a rayas + rombo cian) y un frente, y al tirar se resetea al dorso y se dispara el flip con un pequeño desfase por carta (`150 + index * 120` ms) para que la tirada se sienta más orgánica en vez de que las 6 cartas cambien todas a la vez. Se probó con capturas de Playwright/Chromium en vez de solo revisar el CSS a ojo, ya que Roberto no puede correr el navegador desde su sesión para verificarlo él mismo.
 - **Repo público**: GitHub Pages gratis solo sirve repos públicos. Se decidió
   con Roberto explícitamente (no hay datos sensibles, es un proyecto de
   aprendizaje/portfolio).
@@ -70,8 +71,6 @@ palabras clave para cada orientación.
 
 - Historial de tiradas pasadas (aún no definido cómo guardarlo — no hay
   backend, se resolvería con `localStorage` del navegador).
-- Animación al "voltear" cada carta al tirarla (hoy aparece directo, sin
-  transición).
 - Si en algún momento se consigue acceso a imágenes reales del mazo
   Rider-Waite (dominio público), evaluar reemplazar los íconos SVG propios
   — Roberto las subiría manualmente vía GitHub, ya que Claude Code no puede

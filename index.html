@@ -53,6 +53,30 @@
       position: absolute;
       width: 17%;
       aspect-ratio: 0.6;
+      transform: translate(-50%, -50%);
+      perspective: 800px;
+    }
+
+    .carta.con-carta {
+      cursor: pointer;
+    }
+
+    .carta-flip {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s ease;
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+    }
+
+    .carta-flip.volteada {
+      transform: rotateY(180deg);
+    }
+
+    .cara {
+      position: absolute;
+      inset: 0;
       background: #2b1f3d;
       border: 2px solid #c9a86a;
       border-radius: 8px;
@@ -65,14 +89,29 @@
       line-height: 1.2;
       padding: 4px;
       box-sizing: border-box;
-      transform: translate(-50%, -50%);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
-    .carta.con-carta {
-      cursor: pointer;
+    .cara-dorso {
+      background:
+        repeating-linear-gradient(45deg, #2b1f3d 0 6px, #241a33 6px 12px);
     }
 
-    .carta.con-carta:active {
+    .cara-dorso::before {
+      content: "";
+      width: 38%;
+      aspect-ratio: 1;
+      border: 1.5px solid #4de8ff;
+      transform: rotate(45deg);
+      box-shadow: 0 0 6px #4de8ff88;
+    }
+
+    .cara-frente {
+      transform: rotateY(180deg);
+    }
+
+    .carta.con-carta:active .cara-frente {
       border-color: #4de8ff;
     }
 
@@ -354,12 +393,12 @@
   <button id="tirar">Tirar 6 cartas</button>
   <p id="pista">Tocá una carta para ver su significado</p>
   <div id="pentagrama">
-    <div class="carta punto-1"></div>
-    <div class="carta punto-2"></div>
-    <div class="carta punto-3"></div>
-    <div class="carta punto-4"></div>
-    <div class="carta punto-5"></div>
-    <div class="carta centro"></div>
+    <div class="carta punto-1"><div class="carta-flip"><div class="cara cara-dorso"></div><div class="cara cara-frente"></div></div></div>
+    <div class="carta punto-2"><div class="carta-flip"><div class="cara cara-dorso"></div><div class="cara cara-frente"></div></div></div>
+    <div class="carta punto-3"><div class="carta-flip"><div class="cara cara-dorso"></div><div class="cara cara-frente"></div></div></div>
+    <div class="carta punto-4"><div class="carta-flip"><div class="cara cara-dorso"></div><div class="cara cara-frente"></div></div></div>
+    <div class="carta punto-5"><div class="carta-flip"><div class="cara cara-dorso"></div><div class="cara cara-frente"></div></div></div>
+    <div class="carta centro"><div class="carta-flip"><div class="cara cara-dorso"></div><div class="cara cara-frente"></div></div></div>
   </div>
 
   <div id="modal-fondo">
@@ -563,13 +602,25 @@
 
       cajas.forEach((caja, index) => {
         const carta = cartasEnMesa[index];
-        caja.classList.add('con-carta');
-        caja.innerHTML = `
+        const flip = caja.querySelector('.carta-flip');
+        const frente = caja.querySelector('.cara-frente');
+
+        caja.classList.remove('con-carta');
+        flip.classList.remove('volteada');
+        frente.innerHTML = `
           <div class="contenido-carta ${carta.invertida ? 'invertida' : ''}">
             <svg class="icono-carta" viewBox="0 0 24 24"><use href="#icon-${carta.icono}"></use></svg>
             <span>${carta.nombre}</span>
           </div>
         `;
+
+        // Fuerza el reflow para que el reseteo del flip anterior no se salte la transición.
+        void flip.offsetWidth;
+
+        setTimeout(() => {
+          flip.classList.add('volteada');
+          caja.classList.add('con-carta');
+        }, 150 + index * 120);
       });
 
       pista.classList.add('visible');
